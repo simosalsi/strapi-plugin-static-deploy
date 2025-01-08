@@ -1,7 +1,8 @@
-import { getTranslation } from './utils/getTranslation';
+import pluginPackage from '../../package.json';
 import { PLUGIN_ID } from './pluginId';
-import { Initializer } from './components/Initializer';
 import { PluginIcon } from './components/PluginIcon';
+
+const name = pluginPackage.strapi.displayName;
 
 export default {
   register(app: any) {
@@ -10,19 +11,16 @@ export default {
       icon: PluginIcon,
       intlLabel: {
         id: `${PLUGIN_ID}.plugin.name`,
-        defaultMessage: PLUGIN_ID,
+        defaultMessage: name,
       },
       Component: async () => {
         const { App } = await import('./pages/App');
-
         return App;
       },
     });
 
     app.registerPlugin({
       id: PLUGIN_ID,
-      initializer: Initializer,
-      isReady: false,
       name: PLUGIN_ID,
     });
   },

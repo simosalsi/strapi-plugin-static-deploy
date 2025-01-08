@@ -1,1 +1,4 @@
-{}
+{
+  "static-deploy.plugin.name": "Deploy Static Site",
+  "static-deploy.trigger-button.label": "Trigger"
+}

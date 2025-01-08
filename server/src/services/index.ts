@@ -1,5 +1,3 @@
-import service from './service';
+import githubActions from './githubActions';
 
-export default {
-  service,
-};
+export default { githubActions };
