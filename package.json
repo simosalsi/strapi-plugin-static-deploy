@@ -1,6 +1,24 @@
 {
-  "version": "0.0.0",
-  "keywords": [],
+  "name": "strapi-plugin-static-deploy",
+  "version": "0.0.1",
+  "description": "Trigger Github workflows to build and deploy statically generated websites",
+  "license": "MIT",
+  "strapi": {
+    "kind": "plugin",
+    "name": "static-deploy",
+    "displayName": "Deploy Static Site",
+    "description": "Trigger Github workflows to build and deploy statically generated websites"
+  },
+  "author": {
+    "name": "Simone Salsi",
+    "url": "https://github.com/simosalsi"
+  },
+  "maintainers": [
+    {
+      "name": "Simone Salsi",
+      "url": "https://github.com/simosalsi"
+    }
+  ],
   "type": "commonjs",
   "exports": {
     "./package.json": "./package.json",
@@ -35,6 +53,14 @@
     "@strapi/icons": "^2.0.0-rc.14",
     "react-intl": "^7.1.0"
   },
+  "peerDependencies": {
+    "@strapi/strapi": "^5.6.0",
+    "@strapi/sdk-plugin": "^5.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.1",
+    "styled-components": "^6.1.14"
+  },
   "devDependencies": {
     "@strapi/strapi": "^5.6.0",
     "@strapi/sdk-plugin": "^5.3.0",
@@ -48,30 +74,19 @@
     "@strapi/typescript-utils": "^5.6.0",
     "typescript": "^5.7.2"
   },
-  "peerDependencies": {
-    "@strapi/strapi": "^5.6.0",
-    "@strapi/sdk-plugin": "^5.3.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.28.1",
-    "styled-components": "^6.1.14"
-  },
-  "strapi": {
-    "kind": "plugin",
-    "name": "strapi-plugin-static-deploy",
-    "displayName": "Deploy Static Site",
-    "description": "Trigger Github workflows to build and deploy statically generated websites"
-  },
-  "name": "strapi-plugin-static-deploy",
-  "description": "Trigger Github workflows to build and deploy statically generated websites",
-  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/simosalsi/strapi-plugin-static-deploy.git"
   },
-  "bugs": {
-    "url": "https://github.com/simosalsi/strapi-plugin-static-deploy/issues"
-  },
-  "homepage": "https://github.com/simosalsi/strapi-plugin-static-deploy#readme",
-  "author": "Simone Salsi <salsi.simone97@gmail.com>"
+  "keywords": [
+    "strapi",
+    "plugin",
+    "static",
+    "deploy",
+    "build",
+    "trigger",
+    "github",
+    "actions",
+    "workflows"
+  ]
 }

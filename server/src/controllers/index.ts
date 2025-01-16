@@ -1,5 +1,3 @@
-import controller from './controller';
+import githubActions from './githubActions';
 
-export default {
-  controller,
-};
+export default { githubActions };
