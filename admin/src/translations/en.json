@@ -1,4 +1,10 @@
 {
   "static-deploy.plugin.name": "Deploy Static Site",
-  "static-deploy.trigger-button.label": "Trigger"
+  "static-deploy.trigger-button.label": "Trigger",
+  "static-deploy.reload-button.label": "Reload History",
+  "static-deploy.history-table.run-number": "RUN NUMBER",
+  "static-deploy.history-table.workflow-name": "WORKFLOW NAME",
+  "static-deploy.history-table.status": "STATUS",
+  "static-deploy.history-table.creation-date": "CREATION DATE",
+  "static-deploy.history-table.duration": "DURATION"
 }
