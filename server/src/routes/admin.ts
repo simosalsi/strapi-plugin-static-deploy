@@ -6,10 +6,7 @@ export default {
       path: '/history',
       handler: 'githubActions.history',
       config: {
-        policies: [
-          'admin::isAuthenticatedAdmin',
-          // TODO: Add policy to make sure admin user has permissions
-        ],
+        policies: ['admin::isAuthenticatedAdmin'],
       },
     },
     {
@@ -17,12 +14,8 @@ export default {
       path: '/trigger',
       handler: 'githubActions.trigger',
       config: {
-        policies: [
-          'admin::isAuthenticatedAdmin',
-          // TODO: Add policy to make sure admin user has permissions
-        ],
+        policies: ['admin::isAuthenticatedAdmin'],
       },
     },
   ],
 };
-
