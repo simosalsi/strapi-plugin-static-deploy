@@ -1,6 +1,6 @@
 {
   "name": "strapi-plugin-static-deploy",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Trigger Github workflows to build and deploy statically generated websites",
   "license": "MIT",
   "strapi": {
@@ -46,7 +46,8 @@
     "watch:link": "strapi-plugin watch:link",
     "verify": "strapi-plugin verify",
     "test:ts:front": "run -T tsc -p admin/tsconfig.json",
-    "test:ts:back": "run -T tsc -p server/tsconfig.json"
+    "test:ts:back": "run -T tsc -p server/tsconfig.json",
+    "prepublish": "strapi-plugin build && node scripts/watch-and-stop.js && node scripts/organize-dist-for-publish.js && yarn verify && node scripts/remove-dev-dir.js"
   },
   "dependencies": {
     "@strapi/design-system": "^2.0.0-rc.14",
