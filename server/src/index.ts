@@ -18,7 +18,7 @@ import services from './services';
 
 export default {
   // register,
-  // bootstrap,
+  bootstrap,
   // destroy,
   config,
   controllers,

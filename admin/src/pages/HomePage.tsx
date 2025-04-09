@@ -3,9 +3,10 @@ import { useIntl } from 'react-intl';
 import { getTranslation } from '../utils/getTranslation';
 import { Play, ArrowClockwise } from '@strapi/icons';
 import { useEffect, useState } from 'react';
-import { useFetchClient } from '@strapi/strapi/admin';
+import { useFetchClient, useRBAC } from '@strapi/strapi/admin';
 import { PLUGIN_ID } from '../pluginId';
 import { differenceInMilliseconds, formatRelative } from 'date-fns';
+import pluginPermissions from '../permissions';
 
 const HomePage = () => {
   const { formatMessage } = useIntl();
@@ -13,6 +14,7 @@ const HomePage = () => {
   const [loadingTriggerButton, setLoadingTriggerButton] = useState(false);
   const [history, setHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState<'loading' | 'planned' | 'none'>('none');
+  const { allowedActions: { canTrigger } } = useRBAC(pluginPermissions.trigger);
 
   async function fetchHistory() {
     setLoadingHistory('loading');
@@ -59,7 +61,6 @@ const HomePage = () => {
     fetchHistory();
   }, []);
 
-  // TODO: Wrap in <CheckPagePermissions />
   return (
     <Main
       style={{
@@ -73,7 +74,7 @@ const HomePage = () => {
           <Button onClick={fetchHistory} loading={loadingHistory !== 'none'} disabled={loadingTriggerButton} style={{ height: '4.2rem' }} variant='secondary' startIcon={<ArrowClockwise/>}>
             <Typography fontSize="1.6rem">{formatMessage({ id: getTranslation('reload-button.label') })}</Typography>
           </Button>
-          <Button onClick={triggerGithubActions} loading={loadingTriggerButton} disabled={loadingHistory !== 'none'} style={{ height: '4.2rem' }} variant='default' startIcon={<Play/>}>
+          <Button onClick={triggerGithubActions} loading={loadingTriggerButton} disabled={loadingHistory !== 'none' || !canTrigger} style={{ height: '4.2rem' }} variant='default' startIcon={<Play/>}>
             <Typography fontSize="1.6rem">{formatMessage({ id: getTranslation('trigger-button.label') })}</Typography>
           </Button>
         </Flex>

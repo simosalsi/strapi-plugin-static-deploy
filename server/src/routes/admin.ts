@@ -8,7 +8,6 @@ export default {
       config: {
         policies: [
           'admin::isAuthenticatedAdmin',
-          // TODO: Add policy to make sure admin user has permissions
         ],
       },
     },
@@ -19,7 +18,6 @@ export default {
       config: {
         policies: [
           'admin::isAuthenticatedAdmin',
-          // TODO: Add policy to make sure admin user has permissions
         ],
       },
     },
