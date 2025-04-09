@@ -6,9 +6,7 @@ export default {
       path: '/history',
       handler: 'githubActions.history',
       config: {
-        policies: [
-          'admin::isAuthenticatedAdmin',
-        ],
+        policies: ['admin::isAuthenticatedAdmin'],
       },
     },
     {
@@ -16,11 +14,8 @@ export default {
       path: '/trigger',
       handler: 'githubActions.trigger',
       config: {
-        policies: [
-          'admin::isAuthenticatedAdmin',
-        ],
+        policies: ['admin::isAuthenticatedAdmin'],
       },
     },
   ],
 };
-
