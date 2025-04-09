@@ -10,7 +10,7 @@ The only reason it's already published is due to time constraints of a work proj
 Appropriate documentation will come with version 1.0.0.
 
 ## Roadmap
-- Handle permissions (currently, any user can trigger a deployment)
+- Handle permissions (currently, any user can trigger a deployment) ✅
 - Show history of deployments / workflows triggered ✅
 - Filter deployment history by `environment` ✅
 - **Optional:** Implement toasts for user feedback (although alerts are kinda nice because they force you to read and click to dismiss them)
