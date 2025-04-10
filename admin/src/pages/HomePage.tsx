@@ -38,11 +38,11 @@ const HomePage = () => {
       const { data } = await get(`/${PLUGIN_ID}/history`);
       setHistory(data.workflow_runs.slice(0, 10));
     } catch (error: any) {
-      console.error(error.name);
       if (error.name === 'AbortError') {
         // User likely just changed page before fetch completed, do nothing
         return;
       } else {
+        console.error(error);
         toggleNotification({
           type: 'danger',
           title: 'Failed to fetch workflow history!',
