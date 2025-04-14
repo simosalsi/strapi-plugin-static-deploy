@@ -15,21 +15,36 @@ import { useIntl } from 'react-intl';
 import { getTranslation } from '../utils/getTranslation';
 import { Play, ArrowClockwise } from '@strapi/icons';
 import { useEffect, useState } from 'react';
-import { useFetchClient, useNotification, useRBAC } from '@strapi/strapi/admin';
+import { ConfirmDialog, useFetchClient, useNotification, useRBAC } from '@strapi/strapi/admin';
 import { PLUGIN_ID } from '../pluginId';
 import { differenceInMilliseconds, formatRelative } from 'date-fns';
 import pluginPermissions from '../permissions';
+import { Dialog } from '@strapi/design-system';
+import Workflow from '../../../types/workflow';
+import Config from '../../../types/config';
 
 const HomePage = () => {
   const { formatMessage } = useIntl();
   const { get, post } = useFetchClient();
   const [loadingTriggerButton, setLoadingTriggerButton] = useState(false);
-  const [history, setHistory] = useState([]);
+  const [config, setConfig] = useState<Config | null>(null);
+  const [history, setHistory] = useState<Array<Workflow>>([]);
   const [loadingHistory, setLoadingHistory] = useState<'loading' | 'planned' | 'none'>('none');
+  const [showTriggerConfirmationPopup, setShowTriggerConfirmationPopup] = useState(false);
   const {
     allowedActions: { canTrigger },
   } = useRBAC(pluginPermissions.trigger);
   const { toggleNotification } = useNotification();
+
+  async function getConfig() {
+    try {
+      const { data } = await get<Config>(`/${PLUGIN_ID}/config`);
+      setConfig(data);
+    } catch (error: any) {
+      console.error(error);
+      setConfig(null);
+    }
+  }
 
   async function fetchHistory() {
     setLoadingHistory('loading');
@@ -96,6 +111,7 @@ const HomePage = () => {
   }
 
   useEffect(() => {
+    getConfig();
     fetchHistory();
   }, []);
 
@@ -123,18 +139,39 @@ const HomePage = () => {
               {formatMessage({ id: getTranslation('reload-button.label') })}
             </Typography>
           </Button>
-          <Button
-            onClick={triggerGithubActions}
-            loading={loadingTriggerButton}
-            disabled={loadingHistory !== 'none' || !canTrigger}
-            style={{ height: '4.2rem' }}
-            variant="default"
-            startIcon={<Play />}
+
+          <Dialog.Root
+            open={showTriggerConfirmationPopup}
+            onOpenChange={setShowTriggerConfirmationPopup}
           >
-            <Typography fontSize="1.6rem">
-              {formatMessage({ id: getTranslation('trigger-button.label') })}
-            </Typography>
-          </Button>
+            <Dialog.Trigger>
+              <Button
+                loading={loadingTriggerButton}
+                disabled={loadingHistory !== 'none' || !canTrigger}
+                style={{ height: '4.2rem' }}
+                variant="default"
+                startIcon={<Play />}
+              >
+                <Typography fontSize="1.6rem">
+                  {formatMessage({ id: getTranslation('trigger-button.label') })}
+                </Typography>
+              </Button>
+            </Dialog.Trigger>
+
+            <ConfirmDialog
+              variant="default"
+              icon={null}
+              onConfirm={triggerGithubActions}
+              title="Confirm Workflow Trigger"
+            >
+              <Typography fontSize="1.4rem">
+                Triggering workflow {history[0]?.name ? `"${history[0].name}"` : ''}
+              </Typography>
+              {config && (
+                <Typography fontSize="1.2rem">(Workflow ID: {config.workflowID})</Typography>
+              )}
+            </ConfirmDialog>
+          </Dialog.Root>
         </Flex>
       </Flex>
 
@@ -194,7 +231,7 @@ const HomePage = () => {
           )}
 
           {loadingHistory === 'none' &&
-            history.map((workflow: any) => {
+            history.map((workflow: Workflow) => {
               const msDuration = differenceInMilliseconds(
                 new Date(workflow.updated_at),
                 new Date(workflow.run_started_at)

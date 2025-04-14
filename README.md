@@ -18,7 +18,7 @@ Appropriate documentation will come with version 1.0.0.
 - Documentation + Release 1.0.0 + Submit plugin to Strapi Market
 
 ### Possible further enhancements
-- Confirmation pop-up before triggering deployment
+- Confirmation pop-up before triggering deployment ✅
 - Automatic refresh of the history of deployments after trigger ✅
 - Show workflow logs
 - Allow multiple workflows
