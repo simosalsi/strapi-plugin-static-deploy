@@ -17,7 +17,7 @@ import { Play, ArrowClockwise } from '@strapi/icons';
 import { useEffect, useState } from 'react';
 import { ConfirmDialog, useFetchClient, useNotification, useRBAC } from '@strapi/strapi/admin';
 import { PLUGIN_ID } from '../pluginId';
-import { differenceInMilliseconds, formatRelative, set } from 'date-fns';
+import { differenceInMilliseconds, formatRelative } from 'date-fns';
 import pluginPermissions from '../permissions';
 import { Dialog } from '@strapi/design-system';
 import Workflow from '../../../types/workflow';
