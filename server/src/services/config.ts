@@ -10,6 +10,7 @@ const configService = ({ strapi }: { strapi: Core.Strapi }) => ({
       const branch = strapi.plugin(PLUGIN_ID).config('branch');
       const githubToken = strapi.plugin(PLUGIN_ID).config('githubToken');
       const environment = strapi.plugin(PLUGIN_ID).config('environment'); // TODO: Generalize this to inputs to be able to add any input
+      const hideGithubLink = strapi.plugin(PLUGIN_ID).config('hideGithubLink');
 
       return {
         owner,
@@ -18,6 +19,7 @@ const configService = ({ strapi }: { strapi: Core.Strapi }) => ({
         branch,
         githubToken,
         environment,
+        hideGithubLink,
       };
     } catch (err: any) {
       return err.response;

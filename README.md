@@ -20,7 +20,7 @@ Appropriate documentation will come with version 1.0.0.
 ### Possible further enhancements
 - Confirmation pop-up before triggering deployment ✅
 - Automatic refresh of the history of deployments after trigger ✅
-- Show workflow logs
+- Link to workflow run's github page ✅
 - Allow multiple workflows
 
 ## Credits
