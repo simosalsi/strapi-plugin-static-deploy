@@ -24,7 +24,6 @@ import Workflow from '../../../types/workflow';
 import Config from '../../../types/config';
 import { Tooltip } from '@strapi/design-system';
 import { IconButton } from '@strapi/design-system';
-import { IconButtonGroup } from '@strapi/design-system';
 
 const HomePage = () => {
   const { formatMessage } = useIntl();
