@@ -1,11 +1,6 @@
-type Validator = Partial<{
-  owner: string;
-  repo: string;
-  branch: string;
-  workflowID: string;
-  githubToken: string;
-  environment: string;
-}>;
+import Config from '../../types/Config';
+
+type Validator = Partial<Config>;
 
 export default {
   default: {},

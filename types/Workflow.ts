@@ -7,4 +7,5 @@ export default interface Workflow {
   run_number: number;
   conclusion?: string;
   status: string;
+  html_url: string;
 }

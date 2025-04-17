@@ -13,7 +13,7 @@ import {
 } from '@strapi/design-system';
 import { useIntl } from 'react-intl';
 import { getTranslation } from '../utils/getTranslation';
-import { Play, ArrowClockwise } from '@strapi/icons';
+import { Play, ArrowClockwise, ExternalLink, Eye } from '@strapi/icons';
 import { useEffect, useState } from 'react';
 import { ConfirmDialog, useFetchClient, useNotification, useRBAC } from '@strapi/strapi/admin';
 import { PLUGIN_ID } from '../pluginId';
@@ -22,6 +22,9 @@ import pluginPermissions from '../permissions';
 import { Dialog } from '@strapi/design-system';
 import Workflow from '../../../types/workflow';
 import Config from '../../../types/config';
+import { Tooltip } from '@strapi/design-system';
+import { IconButton } from '@strapi/design-system';
+import { IconButtonGroup } from '@strapi/design-system';
 
 const HomePage = () => {
   const { formatMessage } = useIntl();
@@ -203,6 +206,7 @@ const HomePage = () => {
                 {formatMessage({ id: getTranslation('history-table.duration') })}
               </Typography>
             </Th>
+            {!config?.hideGithubLink && <Th key={'actions'}></Th>}
           </Tr>
         </Thead>
         <Tbody>
@@ -215,6 +219,7 @@ const HomePage = () => {
               </Td>
               <Td></Td>
               <Td></Td>
+              {!config?.hideGithubLink && <Td></Td>}
             </Tr>
           )}
 
@@ -227,6 +232,7 @@ const HomePage = () => {
               </Td>
               <Td></Td>
               <Td></Td>
+              {!config?.hideGithubLink && <Td></Td>}
             </Tr>
           )}
 
@@ -265,6 +271,17 @@ const HomePage = () => {
                       {workflow.conclusion ? `${mins}m ${secs}s` : 'in progress'}
                     </Typography>
                   </Td>
+                  {!config?.hideGithubLink && (
+                    <Td>
+                      <Tooltip description="Show in Github">
+                        <a href={workflow.html_url} target="_blank" rel="noreferrer">
+                          <IconButton aria-label="Show in Github">
+                            <ExternalLink />
+                          </IconButton>
+                        </a>
+                      </Tooltip>
+                    </Td>
+                  )}
                 </Tr>
               );
             })}

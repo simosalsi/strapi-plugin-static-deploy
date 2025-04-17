@@ -5,4 +5,5 @@ export default interface Config {
   branch: string;
   githubToken: string;
   environment: string;
+  hideGithubLink?: boolean;
 }
