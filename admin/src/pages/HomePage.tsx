@@ -13,7 +13,7 @@ import {
 } from '@strapi/design-system';
 import { useIntl } from 'react-intl';
 import { getTranslation } from '../utils/getTranslation';
-import { Play, ArrowClockwise, ExternalLink, Eye } from '@strapi/icons';
+import { Play, ArrowClockwise, ExternalLink, Expand } from '@strapi/icons';
 import { useEffect, useState } from 'react';
 import { ConfirmDialog, useFetchClient, useNotification, useRBAC } from '@strapi/strapi/admin';
 import { PLUGIN_ID } from '../pluginId';
@@ -28,7 +28,7 @@ import { IconButton } from '@strapi/design-system';
 const HomePage = () => {
   const { formatMessage } = useIntl();
   const { get, post } = useFetchClient();
-  const [loadingTriggerButton, setLoadingTriggerButton] = useState(false);
+  const [loadingTriggerButton, setLoadingTriggerButton] = useState(false); // TODO: Maybe separate loadingTriggerButton from loadingStagingButton
   const [config, setConfig] = useState<Config | null>(null);
   const [history, setHistory] = useState<Array<Workflow>>([]);
   const [loadingHistory, setLoadingHistory] = useState<'loading' | 'planned' | 'none'>('none');
@@ -147,17 +147,44 @@ const HomePage = () => {
             onOpenChange={setShowTriggerConfirmationPopup}
           >
             <Dialog.Trigger>
-              <Button
-                loading={loadingTriggerButton}
-                disabled={loadingHistory !== 'none' || !canTrigger}
-                style={{ height: '4.2rem' }}
-                variant="default"
-                startIcon={<Play />}
-              >
-                <Typography fontSize="1.6rem">
-                  {formatMessage({ id: getTranslation('trigger-button.label') })}
-                </Typography>
-              </Button>
+              {config?.staging ? (
+                <Flex>
+                  <Button
+                    loading={loadingTriggerButton}
+                    disabled={loadingHistory !== 'none' || !canTrigger}
+                    style={{ height: '4.2rem', borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+                    variant="default"
+                    startIcon={<Expand />}
+                  >
+                    <Typography fontSize="1.6rem">
+                      {formatMessage({ id: getTranslation('staging-button.label') })}
+                    </Typography>
+                  </Button>
+                  <Button
+                    loading={loadingTriggerButton}
+                    disabled={loadingHistory !== 'none' || !canTrigger}
+                    style={{ height: '4.2rem', borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+                    variant="default"
+                    startIcon={<Play />}
+                  >
+                    <Typography fontSize="1.6rem">
+                      {formatMessage({ id: getTranslation('trigger-button.label') })}
+                    </Typography>
+                  </Button>
+                </Flex>
+              ) : (
+                <Button
+                  loading={loadingTriggerButton}
+                  disabled={loadingHistory !== 'none' || !canTrigger}
+                  style={{ height: '4.2rem' }}
+                  variant="default"
+                  startIcon={<Play />}
+                >
+                  <Typography fontSize="1.6rem">
+                    {formatMessage({ id: getTranslation('trigger-button.label') })}
+                  </Typography>
+                </Button>
+              )}
             </Dialog.Trigger>
 
             <ConfirmDialog
@@ -178,6 +205,9 @@ const HomePage = () => {
       </Flex>
 
       <Table colCount={5} rowCount={11}>
+        {
+          // TODO: Add staging workflow runs to table
+        }
         <Thead>
           <Tr>
             <Th key={'run-number'}>

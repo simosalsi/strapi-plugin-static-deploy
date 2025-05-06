@@ -11,6 +11,7 @@ const configService = ({ strapi }: { strapi: Core.Strapi }) => ({
       const githubToken = strapi.plugin(PLUGIN_ID).config('githubToken');
       const environment = strapi.plugin(PLUGIN_ID).config('environment'); // TODO: Generalize this to inputs to be able to add any input
       const hideGithubLink = strapi.plugin(PLUGIN_ID).config('hideGithubLink');
+      const staging = strapi.plugin(PLUGIN_ID).config('staging');
 
       return {
         owner,
@@ -20,6 +21,7 @@ const configService = ({ strapi }: { strapi: Core.Strapi }) => ({
         githubToken,
         environment,
         hideGithubLink,
+        staging,
       };
     } catch (err: any) {
       return err.response;
