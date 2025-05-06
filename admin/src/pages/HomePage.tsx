@@ -22,6 +22,7 @@ import pluginPermissions from '../permissions';
 import { Dialog } from '@strapi/design-system';
 import Workflow from '../../../types/workflow';
 import Config from '../../../types/config';
+import StagingStatus from '../../../types/StagingStatus';
 import { Tooltip } from '@strapi/design-system';
 import { IconButton } from '@strapi/design-system';
 
@@ -30,6 +31,7 @@ const HomePage = () => {
   const { get, post } = useFetchClient();
   const [loadingTriggerButton, setLoadingTriggerButton] = useState(false); // TODO: Maybe separate loadingTriggerButton from loadingStagingButton
   const [config, setConfig] = useState<Config | null>(null);
+  const [unstagedUpdates, setUnstagedUpdates] = useState<boolean>(true);
   const [history, setHistory] = useState<Array<Workflow>>([]);
   const [loadingHistory, setLoadingHistory] = useState<'loading' | 'planned' | 'none'>('none');
   const [showTriggerConfirmationPopup, setShowTriggerConfirmationPopup] = useState(false);
@@ -37,6 +39,28 @@ const HomePage = () => {
     allowedActions: { canTrigger },
   } = useRBAC(pluginPermissions.trigger);
   const { toggleNotification } = useNotification();
+
+  async function getStagingStatus() {
+    try {
+      const { data } = await get<StagingStatus>(`/${PLUGIN_ID}/staging-status`);
+      setUnstagedUpdates(data.unstagedUpdates);
+    } catch (error: any) {
+      console.error(error);
+      setUnstagedUpdates(true);
+    }
+  }
+
+  async function setStagingStatus(newDocumentData: StagingStatus) {
+    try {
+      const { data } = await post(`/${PLUGIN_ID}/staging-status`, newDocumentData);
+      if (data.success) {
+        setUnstagedUpdates(newDocumentData.unstagedUpdates);
+      }
+    } catch (error: any) {
+      console.error(error);
+      setUnstagedUpdates(true);
+    }
+  }
 
   async function getConfig() {
     try {
@@ -73,6 +97,9 @@ const HomePage = () => {
   async function triggerGithubActions() {
     try {
       setLoadingTriggerButton(true);
+
+      // TODO: Add check for unstaged updates (call getStagingStatus) to prevent triggering if another editor published changes while the user was on this page 
+
       await post(`/${PLUGIN_ID}/trigger`);
       toggleNotification({
         type: 'success',
@@ -113,6 +140,7 @@ const HomePage = () => {
   }
 
   useEffect(() => {
+    getStagingStatus();
     getConfig();
     fetchHistory();
   }, []);
@@ -149,9 +177,10 @@ const HomePage = () => {
             <Dialog.Trigger>
               {config?.staging ? (
                 <Flex>
+                  {/* TODO: Make it so staging button triggers staging and deploy button triggers production, they currently trigger the same dialog (hence the same workflow) */}
                   <Button
                     loading={loadingTriggerButton}
-                    disabled={loadingHistory !== 'none' || !canTrigger}
+                    disabled={loadingHistory !== 'none' || !canTrigger || !unstagedUpdates}
                     style={{ height: '4.2rem', borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
                     variant="default"
                     startIcon={<Expand />}
@@ -162,7 +191,7 @@ const HomePage = () => {
                   </Button>
                   <Button
                     loading={loadingTriggerButton}
-                    disabled={loadingHistory !== 'none' || !canTrigger}
+                    disabled={loadingHistory !== 'none' || !canTrigger || unstagedUpdates}
                     style={{ height: '4.2rem', borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
                     variant="default"
                     startIcon={<Play />}
@@ -171,6 +200,7 @@ const HomePage = () => {
                       {formatMessage({ id: getTranslation('trigger-button.label') })}
                     </Typography>
                   </Button>
+                  {/* TODO: Add info button to explain how Trigger is "unlocked" --> By deploying to staging and not having any unstaged updates */}
                 </Flex>
               ) : (
                 <Button
@@ -190,7 +220,7 @@ const HomePage = () => {
             <ConfirmDialog
               variant="default"
               icon={null}
-              onConfirm={triggerGithubActions}
+              onConfirm={triggerGithubActions /* TODO: If config.staging exists and unstagedUpdates === true --> trigger staging workflow instead of production */}
               title="Confirm Workflow Trigger"
             >
               <Typography fontSize="1.4rem">
