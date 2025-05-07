@@ -156,6 +156,8 @@ const HomePage = () => {
           {formatMessage({ id: getTranslation('plugin.name') })}
         </Typography>
 
+        <Button onClick={() => setStagingStatus({ unstagedUpdates: false })}>Remove Unstaged Updates</Button>
+
         <Flex direction="row" alignItems="center" gap="1rem">
           <Button
             onClick={fetchHistory}
