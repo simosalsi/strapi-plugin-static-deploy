@@ -40,8 +40,5 @@ export default {
     if (staging && staging.branch && typeof staging.branch !== 'string') {
       throw new Error('`staging.githubToken` key in your plugin config has to be a string');
     }
-    if (staging && staging.environment && typeof staging.environment !== 'string') {
-      throw new Error('`staging.environment` key in your plugin config has to be a string');
-    }
   },
 };

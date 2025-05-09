@@ -9,6 +9,5 @@ export default interface Config {
   staging?: {
     workflowID: string;
     branch?: string;
-    environment?: string;
   }
 }

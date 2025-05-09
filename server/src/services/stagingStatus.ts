@@ -31,7 +31,7 @@ const stagingStatusService = ({ strapi }: { strapi: Core.Strapi }) => ({
         });
       }
 
-      return { unstagedUpdates: currDocument.unstagedUpdates };
+      return currDocument;
     } catch (err: any) {
       return err.response;
     }

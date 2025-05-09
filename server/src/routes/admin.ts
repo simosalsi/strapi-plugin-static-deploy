@@ -18,6 +18,14 @@ export default {
       },
     },
     {
+      method: 'POST',
+      path: '/trigger-staging',
+      handler: 'githubActions.triggerStaging',
+      config: {
+        policies: ['admin::isAuthenticatedAdmin'],
+      },
+    },
+    {
       method: 'GET',
       path: '/config',
       handler: 'config.get',
