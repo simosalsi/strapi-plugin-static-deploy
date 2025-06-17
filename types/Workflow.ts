@@ -8,4 +8,5 @@ export default interface Workflow {
   conclusion?: string;
   status: string;
   html_url: string;
+  path: string;
 }

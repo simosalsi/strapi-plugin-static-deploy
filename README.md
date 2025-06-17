@@ -22,6 +22,8 @@ Appropriate documentation will come with version 1.0.0.
 - Automatic refresh of the history of deployments after trigger ✅
 - Link to workflow run's github page ✅
 - Allow multiple workflows
+- Add the option to include a mandatory staging workflow before any workflow ✅
+- Allow configuration of specific content types list to monitor for updates when determining staging status (currently disables production deployment after ANY publish action)
 
 ## Credits
 This plugin was born as a Strapi V5-compatible version of [Update Static Content](https://github.com/everythinginjs/strapi-plugin-update-static-content) by [Amir Mahmoudi](https://github.com/everythinginjs)

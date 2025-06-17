@@ -4,11 +4,16 @@ type Validator = Partial<Config>;
 
 export default {
   default: {},
-  validator({ owner, repo, branch, workflowID, githubToken, environment }: Validator) {
+  validator({ owner, repo, branch, workflowID, githubToken, environment, staging }: Validator) {
+    // Check if required keys are present
     if (!(owner && repo && branch && workflowID && githubToken)) {
-      return;
+      throw new Error('`owner`, `repo`, `branch`, `workflowID` and `githubToken` keys in your plugin config are required');
+    }
+    if (staging && !staging.workflowID) {
+      throw new Error('`staging.workflowID` key in your plugin config is missing, either set it to a string or remove the whole staging object');
     }
 
+    // Check if base config is valid
     if (owner && typeof owner !== 'string') {
       throw new Error('`owner` key in your plugin config has to be a string');
     }
@@ -26,6 +31,14 @@ export default {
     }
     if (environment && typeof environment !== 'string') {
       throw new Error('`environment` key in your plugin config has to be a string');
+    }
+
+    // Check if staging config is valid
+    if (staging && typeof staging.workflowID !== 'string') {
+      throw new Error('`staging.workflowID` key in your plugin config has to be a string');
+    }
+    if (staging && staging.branch && typeof staging.branch !== 'string') {
+      throw new Error('`staging.githubToken` key in your plugin config has to be a string');
     }
   },
 };
