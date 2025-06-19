@@ -77,7 +77,7 @@ const HomePage = () => {
       const currentStagingStatus = await getStagingStatus();
 
       // If no lastWorkflow --> Leave everything as is
-      // If no currentStagingStatus --> There's been an issue --> Leave everything as is (which in this case will be the prod trigger being blocker)
+      // If no currentStagingStatus --> There's been an issue --> Leave everything as is (which in this case will be the prod trigger being blocked)
       if (currentStagingStatus && lastWorkflow) {
         const lastWorkflowPathArray = lastWorkflow.path.split('/');
         const lastWorkflowFileName = lastWorkflowPathArray[lastWorkflowPathArray.length - 1];
@@ -85,61 +85,96 @@ const HomePage = () => {
         const lastWorkflowCreationDate = new Date(lastWorkflow.created_at);
         const lastUpdateDate = new Date(currentStagingStatus.createdAt);
 
-        // If last updates where made after the last workflow was ran, ignore everything and just disable prod trigger
-        if (currentStagingStatus.unstagedUpdates && lastUpdateDate > lastWorkflowCreationDate) {
-          setUnstagedUpdates(true);
-        } else {
-          // Otherwise, check the last workflow's conclusion
-          if (lastWorkflowFileName === config.staging.workflowID) {
-            // Staging workflow --> Allow prod trigger only if it succeeded
-            setUnstagedUpdates(lastWorkflow.conclusion !== 'success');
-            // Use setStagingStatus to make sure DB data is consistent
-            setStagingStatus({ unstagedUpdates: lastWorkflow.conclusion !== 'success' });
+        if (lastWorkflowFileName === config.staging.workflowID) {
+          // Last workflow was a staging workflow
+
+          // If it hasn't ended yet, disable prod trigger
+          if (!lastWorkflow.conclusion) {
+            setUnstagedUpdates(true);
+            return;
+          }
+
+          // If it ended unsuccessfully, regardless of staging status, disable prod trigger
+          if (lastWorkflow.conclusion !== 'success'){
+            setUnstagedUpdates(true);
+            setStagingStatus({ unstagedUpdates: true });
+            return;
           } else {
-            // Prod workflow
-            if (currentStagingStatus.unstagedUpdates) {
-              // This should not occur: if there are unstaged updates older than the last workflow, the latter should have been forced to be a staging deploy
-              // If this does happen, it means two things:
-              // 1. This case is an error and we should disable prod trigger to be safe
-              // 2. We fetched history before the true last workflow run (a staging one) could be loaded
-              // --> This means the last workflow run is actually a staging run that's ongoing, hence we should disable prod trigger
+            // Last workflow (staging) ended successfully
+
+            // If there are no updates, enable prod trigger
+            if (!currentStagingStatus.unstagedUpdates) {
+              setUnstagedUpdates(false);
+              return
+            }
+
+            // If the updates are more recent than the last workflow, disable prod trigger
+            if (lastUpdateDate > lastWorkflowCreationDate) {
               setUnstagedUpdates(true);
             } else {
-              if (lastWorkflow.conclusion === 'success') {
-                // Successful last prod deploy and no unstaged updates --> Keep prod trigger enabled
-                setUnstagedUpdates(false);
-              } else {
-                // Last prod deploy failed, if latest staging deploy failed as well (or if it doesn't exist), disable prod trigger
-                const lastStagingWorkflow: Workflow | undefined = data.workflow_runs.filter(
-                  (workflow) => {
-                    const workflowPathArray = workflow.path.split('/');
-                    const workflowFileName = workflowPathArray[workflowPathArray.length - 1];
-
-                    return workflowFileName === config.staging!.workflowID;
-                  }
-                )[0];
-
-                if (!lastStagingWorkflow) {
-                  // If last staging workflow doesn't exist (or is too far back), disable prod to be sure
-                  setUnstagedUpdates(true);
-                  // Use setStagingStatus to also update the value in DB for consistency
-                  setStagingStatus({ unstagedUpdates: true });
-                } else {
-                  // Not checking if there are any changes after last staging workflow because if we got here there are no unstaged changes
-
-                  if (lastStagingWorkflow.conclusion === 'success') {
-                    // No updates and last staging deploy was ok, keep prod enabled
-                    setUnstagedUpdates(false);
-                  } else {
-                    // It should be impossible to have a prod deploy after a failed staging deploy
-                    // Hence this is an error case --> reset to prod trigger being disabled
-                    setUnstagedUpdates(true);
-                    // Use setStagingStatus to make sure DB data is consistent
-                    setStagingStatus({ unstagedUpdates: true });
-                  }
-                }
-              }
+              // If the updates are older than the last workflow, enable prod trigger
+              setUnstagedUpdates(false);
+              setStagingStatus({ unstagedUpdates: false });
             }
+          }
+        } else {
+          // Last workflow was a prod workflow
+
+          // It hasn't ended yet, keep prod trigger enabled only if no new unstaged updates were made
+          if (!lastWorkflow.conclusion) {
+            setUnstagedUpdates(currentStagingStatus.unstagedUpdates);
+            return;
+          }
+
+          // It finished unsuccessfully
+          if (lastWorkflow.conclusion !== 'success') {
+            // If last staging workflow was successful, it set unstaged updates to false
+            // Knowing this, if there are any unstaged updates, we can assume they come after the last staging workflow and disable prod trigger
+            if (currentStagingStatus.unstagedUpdates) {
+              setUnstagedUpdates(true);
+              return;
+            }
+
+            // If no unstaged updates, check last staging workflow staging
+            // Only enable prod trigger if the last staging workflow was successful
+            const lastStagingWorkflow: Workflow | undefined = data.workflow_runs.filter(
+              (workflow) => {
+                const workflowPathArray = workflow.path.split('/');
+                const workflowFileName = workflowPathArray[workflowPathArray.length - 1];
+
+                return workflowFileName === config.staging!.workflowID;
+              }
+            )[0];
+
+            // No last staging workflow before current prod workflow, disable prod
+            if (!lastStagingWorkflow) {
+              setUnstagedUpdates(true);
+              setStagingStatus({ unstagedUpdates: true });
+              return;
+            }
+
+            // Last staging workflow hasn't ended yet --> should not occur, disable prod
+            if (!lastStagingWorkflow.conclusion) {
+              setUnstagedUpdates(true);
+              setStagingStatus({ unstagedUpdates: true });
+              return;
+            }
+
+            // Last staging workflow FAIL --> disable prod
+            if (lastStagingWorkflow.conclusion !== 'success') {
+              setUnstagedUpdates(true);
+              setStagingStatus({ unstagedUpdates: true });
+            } else {
+              // Last staging workflow SUCCESS --> enable prod
+              setUnstagedUpdates(false);
+            }
+          } else {
+            // Last workflow (prod) ended successfully
+
+            // Since a successful staging workflow will set unstaged updates to false
+            // We'll assume that if any unstaged updates are present, they came after staging and we need to disable prod trigger
+            // Otherwise, if there are no updates, keep prod trigger enabled
+            setUnstagedUpdates(currentStagingStatus.unstagedUpdates);
           }
         }
       }
