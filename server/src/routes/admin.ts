@@ -49,5 +49,37 @@ export default {
         policies: ['admin::isAuthenticatedAdmin'],
       },
     },
+    {
+      method: 'GET',
+      path: '/emails-for-notifications',
+      handler: 'notifications.getEmails',
+      config: {
+        policies: ['admin::isAuthenticatedAdmin'],
+      },
+    },
+    {
+      method: 'POST',
+      path: '/emails-for-notifications',
+      handler: 'notifications.addEmail',
+      config: {
+        policies: ['admin::isAuthenticatedAdmin'],
+      },
+    },
+    {
+      method: 'DELETE',
+      path: '/emails-for-notifications',
+      handler: 'notifications.deleteEmail',
+      config: {
+        policies: ['admin::isAuthenticatedAdmin'],
+      },
+    },
+    {
+      method: 'POST',
+      path: '/notify',
+      handler: 'notifications.send',
+      config: {
+        policies: ['admin::isAuthenticatedAdmin'],
+      },
+    },
   ],
 };

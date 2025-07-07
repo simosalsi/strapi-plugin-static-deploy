@@ -6,8 +6,9 @@ export default interface Config {
   githubToken: string;
   environment: string;
   hideGithubLink?: boolean;
+  enableEmailNotifications?: boolean;
   staging?: {
     workflowID: string;
     branch?: string;
-  }
+  },
 }

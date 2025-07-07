@@ -25,6 +25,7 @@ const register = ({ strapi }: { strapi: Core.Strapi }) => {
 
     if (
       context.contentType.uid !== `plugin::${PLUGIN_ID}.staging-status` && // Prevent infinite loop
+      context.contentType.uid !== `plugin::${PLUGIN_ID}.email-for-notifications` && // Managing this plugin's notifications should not affect the staging status
       triggerActions.includes(context.action) &&
       !deletingDraftOnlyDocument
     ) {

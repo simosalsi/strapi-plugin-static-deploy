@@ -7,5 +7,6 @@
   "static-deploy.history-table.workflow-name": "WORKFLOW NAME",
   "static-deploy.history-table.status": "STATUS",
   "static-deploy.history-table.creation-date": "CREATION DATE",
-  "static-deploy.history-table.duration": "DURATION"
+  "static-deploy.history-table.duration": "DURATION",
+  "static-deploy.add-email-button.label": "Add Email"
 }

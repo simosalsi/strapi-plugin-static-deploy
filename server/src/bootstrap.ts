@@ -13,6 +13,13 @@ const bootstrap = async ({ strapi }: { strapi: Core.Strapi }) => {
     },
     {
       section: 'plugins',
+      subCategory: 'general',
+      displayName: 'Manage Email Notifications',
+      uid: 'notifications',
+      pluginName: PLUGIN_ID,
+    },
+    {
+      section: 'plugins',
       subCategory: 'actions',
       displayName: 'Trigger builds',
       uid: 'trigger',
