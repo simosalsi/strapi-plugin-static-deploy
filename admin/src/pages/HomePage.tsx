@@ -50,6 +50,14 @@ const HomePage = () => {
     }
   }
 
+  async function sendEmailNotification(event: 'staging-trigger' | 'prod-trigger' | 'trigger') {
+    try {
+      post(`/${PLUGIN_ID}/notify`, { event });
+    } catch (error: any) {
+      console.error(error);
+    }
+  }
+
   async function getStagingStatus(): Promise<StagingStatus | null> {
     try {
       const { data } = await get<StagingStatus>(`/${PLUGIN_ID}/staging-status`);
@@ -211,6 +219,7 @@ const HomePage = () => {
       if (config?.staging && unstagedUpdates) {
         // Staging
         await post(`/${PLUGIN_ID}/trigger-staging`);
+        sendEmailNotification('staging-trigger');
       } else {
         // Prod
         // Check for unstaged updates to prevent triggering if another editor published changes while the user was on this page
@@ -239,7 +248,9 @@ const HomePage = () => {
         }
 
         await post(`/${PLUGIN_ID}/trigger`);
+        sendEmailNotification(config?.staging ? 'prod-trigger' : 'trigger');
       }
+
 
       toggleNotification({
         type: 'success',
@@ -314,13 +325,11 @@ const HomePage = () => {
   return (
     <Main
       style={{
-        padding: '3.2rem 5.4rem',
+        padding: '0 5.4rem 3.2rem 5.4rem',
       }}
     >
       <Flex direction="row" alignItems="center" justifyContent="space-between" marginBottom="4rem">
-        <Typography variant="alpha">
-          {formatMessage({ id: getTranslation('plugin.name') })}
-        </Typography>
+        <Typography variant="alpha">Deployments</Typography>
 
         <Flex direction="row" alignItems="center" gap="1rem">
           <Button

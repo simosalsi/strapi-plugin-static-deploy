@@ -13,6 +13,12 @@ const pluginPermissions = {
       subject: null,
     },
   ],
+  notifications: [
+    {
+      action: `plugin::${PLUGIN_ID}.notifications`,
+      subject: null,
+    },
+  ],
 };
 
 export default pluginPermissions;

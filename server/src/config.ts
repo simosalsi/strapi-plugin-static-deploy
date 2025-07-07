@@ -4,7 +4,7 @@ type Validator = Partial<Config>;
 
 export default {
   default: {},
-  validator({ owner, repo, branch, workflowID, githubToken, environment, staging }: Validator) {
+  validator({ owner, repo, branch, workflowID, githubToken, environment, staging, enableEmailNotifications }: Validator) {
     // Check if required keys are present
     if (!(owner && repo && branch && workflowID && githubToken)) {
       throw new Error('`owner`, `repo`, `branch`, `workflowID` and `githubToken` keys in your plugin config are required');
