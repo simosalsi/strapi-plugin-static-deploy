@@ -26,6 +26,7 @@ Appropriate documentation will come with version 1.0.0.
 - Allow multiple workflows
 - Add the option to include a mandatory staging workflow before any workflow ✅
 - Allow configuration of specific content types list to monitor for updates when determining staging status (currently disables production deployment after ANY publish action)
+- Allow customization of the email notifications' content through templates in configuration
 - Split each email notification trigger (staging trigger, prod trigger, staging workflow end, prod workflow end) to allow for finer configuration
 
 ## Credits
