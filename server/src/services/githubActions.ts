@@ -114,18 +114,22 @@ const githubActionsService = ({ strapi }: { strapi: Core.Strapi }) => ({
       // The following is an array of bools that maps whether or not each workflow belongs to the current environment
       const environmentHistory: ReadonlyArray<boolean> = await Promise.all(
         history.map(async (workflow: { readonly jobs_url: string }) => {
-          const jobs = await axios.get(workflow.jobs_url, {
-            headers: {
-              Accept: 'application/vnd.github+json',
-              Authorization: `token ${githubToken}`,
-            },
-          });
+          try {
+            const jobs = await axios.get(workflow.jobs_url, {
+              headers: {
+                Accept: 'application/vnd.github+json',
+                Authorization: `token ${githubToken}`,
+              },
+            });
 
-          return (
-            jobs.data.jobs.find((job: { readonly name: string }) =>
-              job.name.includes(environment as string)
-            ) !== undefined
-          );
+            return (
+              jobs.data.jobs.find((job: { readonly name: string }) =>
+                job.name.includes(environment as string)
+              ) !== undefined
+            );
+          } catch {
+            return false;
+          }
         })
       );
 

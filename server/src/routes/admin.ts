@@ -1,3 +1,5 @@
+import { PLUGIN_ID } from "../../../admin/src/pluginId";
+
 export default {
   type: 'admin',
   routes: [
@@ -81,5 +83,17 @@ export default {
         policies: ['admin::isAuthenticatedAdmin'],
       },
     },
+    {
+      method: 'POST',
+      path: '/notify-workflow-end',
+      handler: 'notifications.send',
+      config: {
+        auth: false,
+        policies: [
+          `plugin::${PLUGIN_ID}.hasValidBearerToken`,
+          `plugin::${PLUGIN_ID}.isValidWorkflowEndNotificationEvent`,
+        ],
+      },
+    }
   ],
 };

@@ -25,6 +25,6 @@ export default {
   routes,
   services,
   contentTypes,
-  // policies,
+  policies,
   // middlewares,
 };

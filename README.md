@@ -16,7 +16,7 @@ Appropriate documentation will come with version 1.0.0.
 - **Optional:** Implement toasts for user feedback (although alerts are kinda nice because they force you to read and click to dismiss them) ✅
 - Generalize the `environment` parameter to an `inputs` array and allow users to configure whether they want to filter deployment history by any of them
 - Add email notifications on workflow trigger ✅
-- Add email notifications on workflow completion
+- Add email notifications on workflow completion ✅
 - Documentation + Release 1.0.0 + Submit plugin to Strapi Market
 
 ### Possible further enhancements
@@ -26,6 +26,7 @@ Appropriate documentation will come with version 1.0.0.
 - Allow multiple workflows
 - Add the option to include a mandatory staging workflow before any workflow ✅
 - Allow configuration of specific content types list to monitor for updates when determining staging status (currently disables production deployment after ANY publish action)
+- Expand email notification API endpoint (for workflow end) to be able to notify of workflow result directly inside the email
 - Allow customization of the email notifications' content through templates in configuration
 - Split each email notification trigger (staging trigger, prod trigger, staging workflow end, prod workflow end) to allow for finer configuration
 

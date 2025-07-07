@@ -2,41 +2,51 @@ import { type Core,  } from '@strapi/strapi';
 import { PLUGIN_ID } from '../../../admin/src/pluginId';
 import Config from '../../../types/Config';
 
-const notificationTitle: Record<'staging-trigger' | 'prod-trigger' | 'trigger', string> = {
+const notificationTitle: Record<'staging-trigger' | 'prod-trigger' | 'trigger' | 'staging-end' | 'prod-end' | 'end', string> = {
   'staging-trigger': 'Staging Workflow Triggered',
   'prod-trigger': 'Production Workflow Triggered',
-  'trigger': 'Workflow Triggered'
+  'trigger': 'Workflow Triggered',
+  'staging-end': 'Staging Workflow Ended',
+  'prod-end': 'Production Workflow Ended',
+  'end': 'Workflow Ended'
 }
 
-const notificationBody = (workflowID: string, url: string): Record<'staging-trigger' | 'prod-trigger' | 'trigger', string> => ({
+const notificationBody = (workflowID: string, url: string): Record<'staging-trigger' | 'prod-trigger' | 'trigger' | 'staging-end' | 'prod-end' | 'end', string> => ({
   'staging-trigger': `A run of the staging workflow (ID: ${workflowID}) has been triggered!<br/>You can access the ${url === '' ? 'admin panel' : `<a href='${url}'>admin panel</a>`} to check and manage workflows.<br/><br/><small>This email was generated automatically</small>`,
   'prod-trigger': `A run of the production workflow (ID: ${workflowID}) has been triggered!<br/>You can access the ${url === '' ? 'admin panel' : `<a href='${url}'>admin panel</a>`} to check and manage workflows.<br/><br/><small>This email was generated automatically</small>`,
-  'trigger': `A workflow run (ID: ${workflowID}) has been triggered!<br/>You can access the ${url === '' ? 'admin panel' : `<a href='${url}'>admin panel</a>`} to check and manage workflows.<br/><br/><small>This email was generated automatically</small>`
+  'trigger': `A workflow run (ID: ${workflowID}) has been triggered!<br/>You can access the ${url === '' ? 'admin panel' : `<a href='${url}'>admin panel</a>`} to check and manage workflows.<br/><br/><small>This email was generated automatically</small>`,
+  'staging-end': `A run of the staging workflow (ID: ${workflowID}) has completed!<br/>You can access the ${url === '' ? 'admin panel' : `<a href='${url}'>admin panel</a>`} to check its result.<br/><br/><small>This email was generated automatically</small>`,
+  'prod-end': `A run of the production workflow (ID: ${workflowID}) has completed!<br/>You can access the ${url === '' ? 'admin panel' : `<a href='${url}'>admin panel</a>`} to check its result.<br/><br/><small>This email was generated automatically</small>`,
+  'end': `A workflow run (ID: ${workflowID}) has completed!<br/>You can access the ${url === '' ? 'admin panel' : `<a href='${url}'>admin panel</a>`} to check its result.<br/><br/><small>This email was generated automatically</small>`
 })
 
 const notificationsService = ({ strapi }: { strapi: Core.Strapi }) => ({
-  async send(event: 'staging-trigger' | 'prod-trigger' | 'trigger') {
+  async send(event: 'staging-trigger' | 'prod-trigger' | 'trigger' | 'staging-end' | 'prod-end' | 'end') {
     try {
-        const workflowID: Config['workflowID'] = strapi.plugin(PLUGIN_ID).config('workflowID');
-        const staging: Config['staging'] = strapi.plugin(PLUGIN_ID).config('staging');
-        const notifications: Config['enableEmailNotifications'] = strapi.plugin(PLUGIN_ID).config('enableEmailNotifications');
-        const url: string = strapi.config.get('server.url');
+      if (!['staging-trigger', 'prod-trigger', 'trigger', 'staging-end', 'prod-end', 'end'].includes(event)) {
+        return { success: false, err: 'Invalid Event' };
+      }
 
-        if (!notifications) {
-          return { enabled: false, success: true };
-        }
+      const workflowID: Config['workflowID'] = strapi.plugin(PLUGIN_ID).config('workflowID');
+      const staging: Config['staging'] = strapi.plugin(PLUGIN_ID).config('staging');
+      const notifications: Config['notifications'] = strapi.plugin(PLUGIN_ID).config('notifications');
+      const url: string = strapi.config.get('server.url');
 
-        const emails = (await strapi.documents(`plugin::${PLUGIN_ID}.email-for-notifications`).findMany({ sort: 'email:asc' })).map(doc => doc.email);
+      if (!notifications || !notifications.enabled) {
+        return { enabled: false, success: true };
+      }
 
-        if (emails.length > 0) {
-          strapi.plugin('email').services.email.send({
-              to: emails.join(','),
-              subject: notificationTitle[event],
-              html: notificationBody(event === 'staging-trigger' ? (staging?.workflowID ?? '') : workflowID, url)[event],
-          });
-        }
-        
-        return { enabled: true, success: true };
+      const emails = (await strapi.documents(`plugin::${PLUGIN_ID}.email-for-notifications`).findMany({ sort: 'email:asc' })).map(doc => doc.email);
+
+      if (emails.length > 0) {
+        strapi.plugin('email').services.email.send({
+            to: emails.join(','),
+            subject: notificationTitle[event],
+            html: notificationBody((event === 'staging-trigger' || event === 'staging-end') ? (staging?.workflowID ?? '') : workflowID, url)[event],
+        });
+      }
+      
+      return { enabled: true, success: true };
     } catch (err: any) {
       return err.response;
     }
