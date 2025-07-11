@@ -39,7 +39,7 @@ const notificationsService = ({ strapi }: { strapi: Core.Strapi }) => ({
       const emails = (await strapi.documents(`plugin::${PLUGIN_ID}.email-for-notifications`).findMany({ sort: 'email:asc' })).map(doc => doc.email);
 
       if (emails.length > 0) {
-        strapi.plugin('email').services.email.send({
+        await strapi.plugin('email').services.email.send({
             to: emails.join(','),
             subject: notificationTitle[event],
             html: notificationBody((event === 'staging-trigger' || event === 'staging-end') ? (staging?.workflowID ?? '') : workflowID, url)[event],
@@ -48,7 +48,7 @@ const notificationsService = ({ strapi }: { strapi: Core.Strapi }) => ({
       
       return { enabled: true, success: true };
     } catch (err: any) {
-      return err.response;
+      return { success: false, err };
     }
   },
   async getEmails() {
