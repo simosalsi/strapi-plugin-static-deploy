@@ -1,6 +1,6 @@
 {
   "name": "strapi-plugin-static-deploy",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Trigger Github workflows to build and deploy statically generated websites",
   "license": "MIT",
   "strapi": {

@@ -40,9 +40,9 @@ const notificationsService = ({ strapi }: { strapi: Core.Strapi }) => ({
 
       if (emails.length > 0) {
         await strapi.plugin('email').services.email.send({
-            to: emails.join(','),
-            subject: notificationTitle[event],
-            html: notificationBody((event === 'staging-trigger' || event === 'staging-end') ? (staging?.workflowID ?? '') : workflowID, url)[event],
+          to: emails,
+          subject: notificationTitle[event],
+          html: notificationBody((event === 'staging-trigger' || event === 'staging-end') ? (staging?.workflowID ?? '') : workflowID, url)[event],
         });
       }
       
